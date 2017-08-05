@@ -1,0 +1,55 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">BakingApp</string>
+    <string name="title_recipe_detail">Recipe Detail</string>
+
+    <string name="recipe_img">Recipe Image</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="steps">Steps</string>
+    <string name="slash">/</string>
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="error_drm_not_supported">Protected content not supported on API levels below 18</string>
+
+    <string name="error_drm_unsupported_scheme">This device does not support the required DRM scheme</string>
+
+    <string name="error_drm_unknown">An unknown DRM error occurred</string>
+
+    <string name="error_no_decoder">This device does not provide a decoder for <xliff:g id="mime_type">%1$s</xliff:g></string>
+
+    <string name="error_no_secure_decoder">This device does not provide a secure decoder for <xliff:g id="mime_type">%1$s</xliff:g></string>
+
+    <string name="error_querying_decoders">Unable to query device decoders</string>
+
+    <string name="error_instantiating_decoder">Unable to instantiate decoder <xliff:g id="decoder_name">%1$s</xliff:g></string>
+
+    <string name="storage_permission_denied">Permission to access storage was denied</string>
+    <string name="enable_background_audio">Play in background</string>
+    <string name="logging_normal">Normal</string>
+
+    <string name="logging_verbose">Verbose</string>
+    <string name="off">[off]</string>
+    <string name="status">Status :- </string>
+    <string name="undefined">undefined</string>
+    <string name="previous">PREVIOUS</string>
+    <string name="next">NEXT</string>
+    <string name="left_slash">/</string>
+    <string name="unknown_error">Unknown Error!</string>
+    <string name="persons">Persons</string>
+    <string name="name">name</string>
+    <string name="_5">5</string>
+    <string name="video_number_1">video number 1</string>
+    <string name="_1">1</string>
+    <string name="g">G</string>
+    <string name="_250">250</string>
+    <string name="bittersweet_chocolate_60_70_cacao">Bittersweet chocolate (60-70% cacao)</string>
+    <string name="_3">3</string>
+    <string name="starting_prep">Starting prep</string>
+    <string name="play">Play</string>
+    <string name="image">image</string>
+    <string name="what_s_to_eat">What\'s to eat ?</string>
+    <string name="meal">meal</string>
+
+</resources>
