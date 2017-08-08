@@ -89,6 +89,7 @@ public class StepVideoFragment extends Fragment implements ExoPlayer.EventListen
     @Override
     public void onStop() {
         super.onStop();
+        player.release();
     }
 
     void setNextBtnState(){

@@ -1,16 +1,19 @@
-package com.example.mannas.bakingapp;
+package com.example.mannas.bakingapp.widget;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Bundle;
 import android.widget.RemoteViews;
 
+import com.example.mannas.bakingapp.R;
+import com.example.mannas.bakingapp.RecipeListActivity;
 import com.example.mannas.bakingapp.dummy.Recipe;
-import com.example.mannas.bakingapp.dummy.Step;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
@@ -27,6 +30,9 @@ public class SimpleWidgetProvider extends AppWidgetProvider {
     public static String DATA_KEY = "data";
     public static String IS_WIDGET_KEY = "widget";
     public static String RECIPE_KEY = "recipe";
+    public static String INGREDIENTS_KEY = "INGREDIENTS";
+
+
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -35,10 +41,7 @@ public class SimpleWidgetProvider extends AppWidgetProvider {
         for (int i = 0; i < count; i++) {
             int widgetId = appWidgetIds[i];
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget);
-
-
-            SharedPreferences sp = context.getSharedPreferences(context.getPackageName(),Context.MODE_PRIVATE);
-            String json = sp.getString(DATA_KEY ,"");
+            String json =  context.getSharedPreferences(context.getPackageName(),Context.MODE_PRIVATE).getString(DATA_KEY ,"");
             Recipe recipe;
             try {
                 ArrayList<Recipe> ls = Parse(json);
@@ -52,19 +55,31 @@ public class SimpleWidgetProvider extends AppWidgetProvider {
                 }else {
                     remoteViews.setImageViewResource(R.id.imageView,R.drawable.ic_eat);
                 }
-
+                // set the recipe Name
                 remoteViews.setTextViewText(R.id.name, recipe.getName());
-                Intent in = new Intent(context, RecipeListActivity.class);
+                // set click to launch activity
+                Intent in = new Intent( context, RecipeListActivity.class);
                 in.putExtra(IS_WIDGET_KEY,true);
                 in.putExtra(RECIPE_KEY,recipe);
                 PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, in, 0);
-                remoteViews.setOnClickPendingIntent(R.id.widget, pendingIntent);
+                remoteViews.setOnClickPendingIntent(R.id.relative, pendingIntent);
+
+                //set the list of ingredients
+                Intent in2 = new Intent(context, WidgetService.class);
+                in2.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetIds[i]);
+                Bundle b = new Bundle();
+                b.putParcelableArrayList(INGREDIENTS_KEY,recipe.getIngredients());
+                in2.putExtra("b",b);
+//                String ingredients_json = (new Gson()).toJson(recipe.getIngredients());
+//                in2.putParcelableArrayListExtra(INGREDIENTS_KEY , recipe.getIngredients());
+                in2.setData(Uri.parse(in2.toUri(Intent.URI_INTENT_SCHEME)));
+
+                remoteViews.setRemoteAdapter(R.id.widget_list, in2);
+
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
-
 
 
             Intent intent = new Intent(context, SimpleWidgetProvider.class);
@@ -72,11 +87,13 @@ public class SimpleWidgetProvider extends AppWidgetProvider {
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
 //            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 //            remoteViews.setOnClickPendingIntent(R.id.actionButton, pendingIntent);
-            appWidgetManager.updateAppWidget(widgetId, remoteViews);
+            appWidgetManager.updateAppWidget(appWidgetIds, remoteViews);
         }
+
+
     }
 
-    ArrayList<Recipe> Parse(String json) throws JSONException {
+    public static ArrayList<Recipe> Parse(String json) throws JSONException {
         if(json!=""){
             JSONArray arr = new JSONArray(json);
             ArrayList<Recipe> ls = new ArrayList<>();
@@ -87,4 +104,8 @@ public class SimpleWidgetProvider extends AppWidgetProvider {
         }
         return null;
     }
+
+
+
+
 }

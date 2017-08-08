@@ -18,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -27,6 +28,7 @@ import android.widget.Toast;
 
 import com.example.mannas.bakingapp.Content.RecipesLoader;
 import com.example.mannas.bakingapp.dummy.Recipe;
+import com.example.mannas.bakingapp.widget.SimpleWidgetProvider;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
@@ -60,14 +62,7 @@ public class RecipeListActivity extends AppCompatActivity implements LoaderManag
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+
 
         View recyclerView = findViewById(R.id.recipe_list);
         assert recyclerView != null;
@@ -92,8 +87,23 @@ public class RecipeListActivity extends AppCompatActivity implements LoaderManag
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             getApplicationContext().startActivity(intent);
 
+            if(lsAdapter.getItemCount()==0)
+                getSupportLoaderManager().restartLoader(RECIPES_LOADER_ID,null,this).forceLoad();
+
         }
 
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
     }
 

@@ -20,7 +20,6 @@ public class StepVideoActivity extends AppCompatActivity {
         fragment.setArguments(i.getExtras());
         getSupportFragmentManager().beginTransaction().add(R.id.ingredient_activity,fragment,StepVideoFragment.class.getName()).commit();
 
-
     }
 
 
