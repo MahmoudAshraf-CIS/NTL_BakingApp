@@ -48,10 +48,15 @@ public class SimpleWidgetProvider extends AppWidgetProvider {
                 Random random = new Random();
                 Integer index = random.nextInt(ls.size());
                 recipe = ls.get(index);
-                if(recipe.getImageURL()!=null){
-                    Picasso.with(context).load(recipe.getImageURL())
-                            .error(R.drawable.ic_eat)
-                            .into(remoteViews,R.id.imageView,appWidgetIds);
+                if(recipe.getImageURL()!=null && !recipe.getImageURL().equals("")){
+                    try{
+                        Picasso.with(context).load(recipe.getImageURL())
+                                .error(R.drawable.ic_eat)
+                                .into(remoteViews,R.id.imageView,appWidgetIds);
+                    }catch (Exception e){
+                        remoteViews.setImageViewResource(R.id.imageView,R.drawable.ic_eat);
+                        e.printStackTrace();
+                    }
                 }else {
                     remoteViews.setImageViewResource(R.id.imageView,R.drawable.ic_eat);
                 }

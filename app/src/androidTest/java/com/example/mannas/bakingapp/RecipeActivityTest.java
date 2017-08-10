@@ -62,13 +62,11 @@ public class RecipeActivityTest {
                 break;
             Date d2 = new Date();
             if(d2.getTime() - d1.getTime() > 30000){
-                ViewInteraction imageView = onView(
-                        allOf(withId(R.id.img), withContentDescription("Recipe Image"),
-                                childAtPosition(childAtPosition(withId(R.id.recipe_list),
-                                        0),
-                                        0),
+                ViewInteraction recyclerView = onView(
+                        allOf(withId(R.id.recipe_list),
+                                withParent(withId(R.id.frameLayout)),
                                 isDisplayed()));
-                imageView.check(matches(isDisplayed()));
+                recyclerView.check(matches(isDisplayed()));
                 //fails when there is no Data in the Recycler
 
             }
@@ -141,9 +139,12 @@ public class RecipeActivityTest {
         textView4.check(matches(isDisplayed()));
 
         pressBack();
+        onView(withId(R.id.steps_view_pager)).perform(com.example.mannas.bakingapp.ScrollToAction.betterScrollTo());
 
-        onView(withId(R.id.steps_title)).perform(scrollTo() , click());
-        onView(withId(R.id.steps_view_pager)).perform(scrollTo());
+//        onView(withId(R.id.steps_title)).perform(scrollTo() , click());
+//        onView(withId(R.id.steps_view_pager)).perform(scrollTo());
+
+
 //        onView(withId(R.id.recipe_list)).perform(swipeUp());
 //        onView(withId(R.id.recipe_list)).perform(swipeUp());
 //        onView(withId(R.id.recipe_list)).perform(swipeUp());
@@ -154,6 +155,12 @@ public class RecipeActivityTest {
         pager = onView(withId(R.id.steps_view_pager)).perform(swipeRight());
 
         ViewInteraction pager_item = onView( allOf(withId(R.id.pager_item) , isDisplayed() )   );
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         pager_item.perform(click());
 
         // Added a sleep statement to match the app's execution delay.
@@ -166,6 +173,12 @@ public class RecipeActivityTest {
         }
 
 
+        pressBack();
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         pressBack();
 
     }

@@ -51,13 +51,11 @@ public class RecipeListActivityTest {
                 break;
             Date d2 = new Date();
             if(d2.getTime() - d1.getTime() > 20000){
-                ViewInteraction imageView = onView(
-                            allOf(withId(R.id.img), withContentDescription("Recipe Image"),
-                                    childAtPosition(childAtPosition(withId(R.id.recipe_list),
-                                            0),
-                                            0),
-                                    isDisplayed()));
-                            imageView.check(matches(isDisplayed()));
+                ViewInteraction recyclerView = onView(
+                        allOf(withId(R.id.recipe_list),
+                                withParent(withId(R.id.frameLayout)),
+                                isDisplayed()));
+                recyclerView.check(matches(isDisplayed()));
                 //fails when there is no Data in the Recycler
 
             }

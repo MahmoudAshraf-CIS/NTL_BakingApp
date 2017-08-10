@@ -18,7 +18,7 @@ public class StepVideoActivity extends AppCompatActivity {
         Intent i = getIntent();
         StepVideoFragment fragment = new StepVideoFragment();
         fragment.setArguments(i.getExtras());
-        getSupportFragmentManager().beginTransaction().add(R.id.ingredient_activity,fragment,StepVideoFragment.class.getName()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.ingredient_activity,fragment,StepVideoFragment.class.getName()).commit();
 
     }
 

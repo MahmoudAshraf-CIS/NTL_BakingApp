@@ -1,6 +1,7 @@
 package com.example.mannas.bakingapp;
 
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,14 +14,20 @@ import android.widget.TextView;
 
 
 import com.example.mannas.bakingapp.dummy.Step;
+import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.drm.DrmSessionManager;
+import com.google.android.exoplayer2.drm.FrameworkMediaCrypto;
+import com.google.android.exoplayer2.drm.UnsupportedDrmException;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
+import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
@@ -29,6 +36,7 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.ui.DebugTextViewHelper;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
@@ -38,6 +46,7 @@ import com.google.android.exoplayer2.util.Util;
 
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class StepVideoFragment extends Fragment implements ExoPlayer.EventListener{
 
@@ -64,33 +73,81 @@ public class StepVideoFragment extends Fragment implements ExoPlayer.EventListen
             Step_index++;
         }
 //        mp4VideoUri = Uri.parse(mSteps.get(Step_index -1).videoURL);
-        mp4VideoUri = Uri.parse(mSteps.get(Step_index -1).videoURL);
 
-        // 1. Create a default TrackSelector
-        BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
-        TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory(bandwidthMeter);
-        TrackSelector trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
-        // 2. Create the player
-        player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
 
-        // Produces DataSource instances through which media data is loaded.
-        dataSourceFactory = new DefaultDataSourceFactory(getContext(), Util.getUserAgent(getContext(),
-               getContext().getPackageName()));
-        // Produces Extractor instances for parsing the media data.
-        extractorsFactory = new DefaultExtractorsFactory();
-        // This is the MediaSource representing the media to be played.
-        MediaSource videoSource = new ExtractorMediaSource(mp4VideoUri, dataSourceFactory, extractorsFactory, null, null);
-        // Prepare the player with the source.
-        player.addListener(this);
-        player.prepare(videoSource);
-        player.setPlayWhenReady(true);
+
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (Util.SDK_INT > 23) {
+            initializePlayer();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if ((Util.SDK_INT <= 23 || player == null)) {
+            initializePlayer();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (Util.SDK_INT <= 23) {
+            releasePlayer();
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        player.release();
+        if (Util.SDK_INT > 23) {
+            releasePlayer();
+        }
     }
+
+ 
+
+    private void initializePlayer() {
+        boolean needNewPlayer = player == null;
+        if (needNewPlayer) {
+            mp4VideoUri = Uri.parse(mSteps.get(Step_index -1).videoURL);
+
+            // 1. Create a default TrackSelector
+            BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+            TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory(bandwidthMeter);
+            TrackSelector trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
+            // 2. Create the player
+            player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
+
+            // Produces DataSource instances through which media data is loaded.
+            dataSourceFactory = new DefaultDataSourceFactory(getContext(), Util.getUserAgent(getContext(),
+                    getContext().getPackageName()));
+            // Produces Extractor instances for parsing the media data.
+            extractorsFactory = new DefaultExtractorsFactory();
+            // This is the MediaSource representing the media to be played.
+            MediaSource videoSource = new ExtractorMediaSource(mp4VideoUri, dataSourceFactory, extractorsFactory, null, null);
+
+            // Prepare the player with the source.
+            player.addListener(StepVideoFragment.this);
+            player.prepare(videoSource);
+            player.setPlayWhenReady(true);
+        }
+
+    }
+
+    private void releasePlayer() {
+        if (player != null) {
+            player.release();
+            player = null;
+        }
+    }
+
 
     void setNextBtnState(){
         Integer index = Step_index-1;
@@ -172,6 +229,9 @@ public class StepVideoFragment extends Fragment implements ExoPlayer.EventListen
         index.setText(Step_index.toString());
         long_description.setText(mSteps.get(Step_index-1).description);
     }
+
+
+
     @Override
     public void onTimelineChanged(Timeline timeline, Object manifest) {
 

@@ -148,6 +148,7 @@ public class RecipeListActivity extends AppCompatActivity implements LoaderManag
 
             e.putString(SimpleWidgetProvider.DATA_KEY, json);
             e.apply();
+
             Toast.makeText(getApplicationContext(),"finished loading ",Toast.LENGTH_LONG).show();
         }else if( loader.getId()==RECIPES_LOADER_ID){
             DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
@@ -205,11 +206,23 @@ public class RecipeListActivity extends AppCompatActivity implements LoaderManag
 
         @Override
         public void onBindViewHolder(final ViewHolder holder,int position) {
-            Picasso.with(holder.itemView.getContext())
-                    .load(mValues.get(position).getImageURL())
-                    .error(R.drawable.ic_eat)
-                    .placeholder(R.drawable.ic_eat)
-                    .into(holder.img);
+            if(mValues.get(position).getImageURL()!=null && !mValues.get(position).getImageURL().equals("")){
+                try{
+                    Picasso.with(holder.itemView.getContext())
+                            .load(mValues.get(position).getImageURL())
+                            .error(R.drawable.ic_eat)
+                            .placeholder(R.drawable.ic_eat)
+                            .into(holder.img);
+
+                }catch (Exception e){
+                    holder.img.setImageResource(R.drawable.ic_eat);
+                    e.printStackTrace();
+                }
+            }else {
+                holder.img.setImageResource(R.drawable.ic_eat);
+            }
+
+
             holder.serving.setText(mValues.get(position).getServings().toString());
             holder.mName.setText(mValues.get(position).getName());
             holder.itemView.setOnClickListener(new View.OnClickListener() {

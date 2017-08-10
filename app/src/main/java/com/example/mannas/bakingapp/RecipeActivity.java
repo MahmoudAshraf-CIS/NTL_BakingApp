@@ -48,6 +48,17 @@ public class RecipeActivity extends AppCompatActivity {
 
 
         mTwoPane = findViewById(R.id.detail)!=null;
+        if(getSharedPreferences(getPackageName(),MODE_PRIVATE).getBoolean("first_run",true)){
+            final View swap_instruction = findViewById(R.id.swap_instruction);
+            swap_instruction.setVisibility(View.VISIBLE);
+            swap_instruction.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    swap_instruction.setVisibility(View.GONE);
+                }
+            });
+            getSharedPreferences(getPackageName(),MODE_PRIVATE).edit().putBoolean("first_run",false).apply();
+        }
 
 
         if(savedInstanceState!=null)
@@ -102,15 +113,22 @@ public class RecipeActivity extends AppCompatActivity {
         assert ingredients!=null;
         ingredients.setAdapter(new IngredientsAdapter(mItem.getIngredients()));
         ImageView img = (ImageView) findViewById(R.id.img);
-        try{
-            Picasso.with(this).load(mItem.getImageURL())
-                .error(R.drawable.ic_eat)
-                .placeholder(R.drawable.ic_eat)
-                .into(img);
-        }catch (Exception e){
-            img.setImageResource(R.drawable.ic_eat);
-            e.printStackTrace();
+        if(mItem.getImageURL()!=null &&!mItem.getImageURL().equals("")){
+            try{
+                Picasso.with(this).load(mItem.getImageURL())
+                        .error(R.drawable.ic_eat)
+                        .placeholder(R.drawable.ic_eat)
+                        .into(img);
+            }catch (Exception e){
+                img.setImageResource(R.drawable.ic_eat);
+                e.printStackTrace();
+            }
         }
+        else{
+            img.setImageResource(R.drawable.ic_eat);
+        }
+
+
         ViewPager steps_view_pager = (ViewPager) findViewById(R.id.steps_view_pager);
         StepsViewPagerAdapter stepsAdapter = new StepsViewPagerAdapter(mItem.getSteps(),getLayoutInflater());
         steps_view_pager.setAdapter(stepsAdapter);
@@ -149,14 +167,20 @@ public class RecipeActivity extends AppCompatActivity {
             short_description.setText(mSteps.get(position).shortDescription);
 
             ImageView img = (ImageView) view.findViewById(R.id.play);
-            try{
-                Picasso.with(getApplicationContext()).load(mSteps.get(position).thumbnailURL)
-                        .error(R.drawable.play).placeholder(R.drawable.play)
-                        .into(img);
-            }catch (Exception e){
+            if(mSteps.get(position).thumbnailURL!=null && !mSteps.get(position).thumbnailURL.equals("")){
+                try{
+                    Picasso.with(getApplicationContext()).load(mSteps.get(position).thumbnailURL)
+                            .error(R.drawable.play).placeholder(R.drawable.play)
+                            .into(img);
+                }catch (Exception e){
+                    img.setImageResource(R.drawable.play);
+                    e.printStackTrace();
+                }
+            }else{
                 img.setImageResource(R.drawable.play);
-                e.printStackTrace();
             }
+
+
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override

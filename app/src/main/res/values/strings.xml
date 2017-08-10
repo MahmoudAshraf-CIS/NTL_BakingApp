@@ -51,5 +51,7 @@
     <string name="image">image</string>
     <string name="what_s_to_eat">What\'s to eat ?</string>
     <string name="meal">meal</string>
+    <string name="swap_right_left">Swap right/left</string>
+
 
 </resources>
